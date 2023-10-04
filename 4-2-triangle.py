@@ -11,8 +11,8 @@ try:
         T = input()
         if not T.isdigit():
             print('Write a number')
-        t = T/256/2
-        for i in range (256):
+        t = int(T)/255/2
+        for i in range (255):
             GPIO.output (dac, perev(i, 8))
             sleep(5)
         for i in range(255, -1, -1):
