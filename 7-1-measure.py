@@ -34,6 +34,7 @@ def adc():
             value_res = value_res + pow
             return value_res
 
+#Зарядка и Разрядка конденсатора
 try:
     time_start = time.time()
     schet = 0
@@ -50,22 +51,20 @@ try:
         schet +=1
         GPIO.output (led, decimal2binary(voltage))
         all_time.append(time.time()-time_start)
-        GPIO.output(troyka, 0)
-        print('Идет разрядка конденсатора')
-    while (voltage >= 177):
+    while voltage >= 177:
         voltage = adc()
-    print(voltage)
-    data.append(voltage/256*3.3)
-    time.sleep(0)
-    schet +=1
-    GPIO.output (led, decimal2binary(voltage))
-    all_time.append(time.time()-time_start)
+        print(voltage)
+        data.append(voltage/256*3.3)
+        time.sleep(0)
+        schet +=1
+        GPIO.output (led, decimal2binary(voltage))
+        all_time.append(time.time()-time_start)
 
     time_end = time.time()
     time_total = time_end - time_start
     print('График')
-
-    plt.plot(all_time.data)
+#График
+    plt.plot(all_time, data)
     plt.xlabel('Секунды')
     plt.ylabel('Напряжение')
     print('Запись')
@@ -76,11 +75,15 @@ try:
     with open ('settings.txt', 'w') as f:
             f.write('Частота дискретизации' + str(1/time_total * schet) + 'Гц' + '\n')
             f.write('Шаг квантования = 0.0129 В')
-    print('Конец')
+    
+    print('Частота дискретизации, Гц :', schet/time_total)
+    print('Продолжительность,С :', time_total)
+    print('Шаг квантования, В: ', max/256)
+    print('Завершение программы')
         
-
+#Сброс
 finally:
     GPIO.output(dac, 0)
     GPIO.output(led, 0)
     GPIO.cleanup()
-    plt.show
+    plt.show()
